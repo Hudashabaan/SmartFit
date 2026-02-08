@@ -1,0 +1,6 @@
+@SmartFit.API_HostAddress = http://localhost:5073
+
+GET {{SmartFit.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
