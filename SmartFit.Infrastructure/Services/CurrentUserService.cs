@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using SmartFit.Application.Common.Interfaces;
+using SmartFit.Domain.Enums;
 
 namespace SmartFit.Infrastructure.Services
 { 
@@ -16,5 +17,7 @@ public class CurrentUserService : ICurrentUserService
     public string UserId =>
       _httpContextAccessor.HttpContext?.User?
       .FindFirst(ClaimTypes.NameIdentifier)?.Value;
-}
+
+        public UserRole Role => throw new NotImplementedException();
+    }
 }

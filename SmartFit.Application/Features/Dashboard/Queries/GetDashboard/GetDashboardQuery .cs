@@ -8,9 +8,10 @@ using SmartFit.Application.Features.Dashboard.DTOs;
 
 namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
 {
-        public class GetDashboardQuery : IRequest<DashboardDto>
-        {
-            public DateTime Date { get; set; }
-        }
-    
+    public class GetDashboardQuery : IRequest<DashboardDto>
+    {
+        public Guid UserId { get; set; }
+
+        public DateTime Date { get; set; } = DateTime.UtcNow;
+    }
 }

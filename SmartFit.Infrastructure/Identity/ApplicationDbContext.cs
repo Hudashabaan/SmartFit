@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartFit.Application.Common.Interfaces;
 using SmartFit.Domain.Entities;
 using SmartFit.Domain.Entities.SmartFit.Domain.Entities;
+using TaskEntity = SmartFit.Domain.Entities.Task;
 
 namespace SmartFit.Infrastructure.Identity
 {
@@ -17,6 +18,7 @@ namespace SmartFit.Infrastructure.Identity
         {
         }
 
+        public DbSet<ApplicationUser> Users { get; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<BodyAnalysis> BodyAnalyses { get; set; }
         public DbSet<Meal> Meals { get; set; }
@@ -25,6 +27,11 @@ namespace SmartFit.Infrastructure.Identity
 
         public DbSet<HealthSchedule> HealthSchedules { get; set; }
         public DbSet<NotificationHistory> NotificationHistories { get; set; }
+        public DbSet<TaskEntity> Tasks { get; set; }
+        public DbSet<TaskLog> TaskLogs { get; set; }
+        public DbSet<TrainerClientRelation> TrainerClientRelations { get; set; }
+        public DbSet<TrainerInvite> TrainerInvites { get; set; }
+        DbSet<Domain.Entities.Task> IApplicationDbContext.Tasks { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
             => await base.SaveChangesAsync(cancellationToken);

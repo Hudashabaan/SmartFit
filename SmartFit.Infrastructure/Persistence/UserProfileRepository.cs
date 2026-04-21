@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SmartFit.Application.Common.Interfaces;
 using SmartFit.Domain.Entities;
 using SmartFit.Infrastructure.Identity;
@@ -19,12 +14,12 @@ namespace SmartFit.Infrastructure.Persistence
             _context = context;
         }
 
-        public async Task AddAsync(UserProfile profile)
+        public async System.Threading.Tasks.Task AddAsync(UserProfile profile)
         {
             await _context.UserProfiles.AddAsync(profile);
         }
 
-        public async Task SaveChangesAsync()
+        public async System.Threading.Tasks.Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
         }

@@ -4,6 +4,7 @@ using SmartFit.Application.Common.Services;
 using SmartFit.Domain.Entities;
 using SmartFit.Domain.Entities.SmartFit.Domain.Entities;
 using SmartFit.Domain.Enums;
+using Task = System.Threading.Tasks.Task;
 
 namespace SmartFit.Infrastructure.Services
 {

@@ -4,6 +4,7 @@ using SmartFit.Application.Common.Interfaces;
 using SmartFit.Application.Features.Dashboard.DTOs;
 using SmartFit.Application.Features.Meals.DTOs;
 using SmartFit.Application.Features.HealthScheduler.DTOs;
+using SmartFit.Application.Features.Lifestyle.DTOs;
 using SmartFit.Application.DTOs;
 using SmartFit.Domain.Enums;
 
@@ -27,19 +28,21 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
             GetDashboardQuery request,
             CancellationToken cancellationToken)
         {
-            var userId = _currentUser.UserId
+            var userIdString = _currentUser.UserId
                 ?? throw new UnauthorizedAccessException("User not logged in");
+
+            if (!Guid.TryParse(userIdString, out var userIdGuid))
+                throw new Exception("Invalid UserId");
 
             var start = request.Date.Date;
             var end = start.AddDays(1);
 
-            // 🔥 Meals Query
+            // 🔥 Meals
             var mealsQuery = _context.Meals
-                .Where(x => x.UserId == userId
+                .Where(x => x.UserId == userIdString
                          && x.Date >= start
                          && x.Date < end);
 
-            // ✅ Meals List
             var meals = await mealsQuery
                 .OrderByDescending(x => x.Date)
                 .Select(x => new MealDto
@@ -53,7 +56,6 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
                 })
                 .ToListAsync(cancellationToken);
 
-            // ✅ Summary
             var summary = await mealsQuery
                 .GroupBy(x => 1)
                 .Select(g => new
@@ -65,10 +67,10 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            // 🔥 Current Goal
+            // 🔥 Goals
             var goal = await _context.Goals
                 .AsNoTracking()
-                .FirstOrDefaultAsync(g => g.UserId == userId && g.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(g => g.UserId == userIdString && g.IsActive, cancellationToken);
 
             GoalDto? goalDto = null;
             double progress = 0;
@@ -88,16 +90,14 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
 
                 var profile = await _context.UserProfiles
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
+                    .FirstOrDefaultAsync(p => p.UserId == userIdString, cancellationToken);
 
                 if (profile != null)
                 {
                     var currentWeight = profile.Weight;
 
                     if (goal.StartWeight == goal.TargetWeight)
-                    {
                         progress = 100;
-                    }
                     else
                     {
                         switch (goal.Type)
@@ -122,10 +122,10 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
                 }
             }
 
-            // 🔥 Last Food Analysis
+            // 🔥 Food Analysis
             var lastFood = await _context.FoodAnalyses
                 .AsNoTracking()
-                .Where(x => x.UserId == userId)
+                .Where(x => x.UserId == userIdString)
                 .OrderByDescending(x => x.CreatedAt)
                 .Select(x => new LastFoodAnalysisDto
                 {
@@ -139,10 +139,10 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            // 🔥 Last Body Analysis
+            // 🔥 Body Analysis
             var lastBodyEntity = await _context.BodyAnalyses
                 .AsNoTracking()
-                .Where(x => x.UserId == userId)
+                .Where(x => x.UserId == userIdString)
                 .OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -156,14 +156,10 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
                 {
                     var bmi = lastBodyEntity.BMI.Value;
 
-                    if (bmi < 18.5)
-                        category = "Underweight";
-                    else if (bmi < 25)
-                        category = "Normal";
-                    else if (bmi < 30)
-                        category = "Overweight";
-                    else
-                        category = "Obese";
+                    if (bmi < 18.5) category = "Underweight";
+                    else if (bmi < 25) category = "Normal";
+                    else if (bmi < 30) category = "Overweight";
+                    else category = "Obese";
                 }
 
                 lastBody = new LastBodyAnalysisDto
@@ -177,7 +173,7 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
 
             // 🔥 Notifications
             var notificationsQuery = _context.NotificationHistories
-                .Where(x => x.UserId == userId);
+                .Where(x => x.UserId == userIdString);
 
             var notificationsCount = await notificationsQuery.CountAsync(cancellationToken);
 
@@ -192,7 +188,38 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
                 })
                 .ToListAsync(cancellationToken);
 
-            // 🎯 Final Response
+            // 🔥 Lifestyle
+            var tasks = await _context.Tasks
+                .Where(t => t.UserId == userIdGuid)
+                .ToListAsync(cancellationToken);
+
+            var logs = await _context.TaskLogs
+                .Where(l => l.UserId == userIdGuid && l.Date >= start && l.Date < end)
+                .ToListAsync(cancellationToken);
+
+            var todayTasks = tasks.Select(t => new TaskDto
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Description = t.Description,
+                Type = t.Type,
+                IsCompleted = logs.Any(l => l.TaskId == t.Id)
+            }).ToList();
+
+            var totalTasks = tasks.Count;
+            var completedTasks = logs.Select(l => l.TaskId).Distinct().Count();
+
+            double taskProgress = totalTasks > 0
+                ? (double)completedTasks / totalTasks * 100
+                : 0;
+
+            var taskProgressDto = new ProgressDto
+            {
+                TotalTasks = totalTasks,
+                CompletedTasks = completedTasks,
+                ProgressPercentage = taskProgress
+            };
+
             return new DashboardDto
             {
                 TotalCalories = summary?.Calories ?? 0,
@@ -208,9 +235,11 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
                 LastFoodAnalysis = lastFood,
                 LastBodyAnalysis = lastBody,
 
-                // 🆕 Notifications
                 NotificationsCount = notificationsCount,
-                LatestNotifications = latestNotifications
+                LatestNotifications = latestNotifications,
+
+                TodayTasks = todayTasks,
+                TaskProgress = taskProgressDto
             };
         }
     }
