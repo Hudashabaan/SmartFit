@@ -17,7 +17,7 @@ namespace SmartFit.Infrastructure.Services
             _context = context;
         }
 
-        public async Task CreateDefaultTasks(Guid userId)
+        public async Task CreateDefaultTasks(string userId)
         {
             var tasks = new List<SmartFit.Domain.Entities.Task>
         {
@@ -52,6 +52,11 @@ namespace SmartFit.Infrastructure.Services
 
             await _context.Tasks.AddRangeAsync(tasks);
             await _context.SaveChangesAsync(CancellationToken.None);
+        }
+
+        public Task CreateDefaultTasks(Guid userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

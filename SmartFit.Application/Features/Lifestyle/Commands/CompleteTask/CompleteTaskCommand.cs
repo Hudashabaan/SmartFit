@@ -10,6 +10,6 @@ namespace SmartFit.Application.Features.Lifestyle.Commands.CompleteTask
     public class CompleteTaskCommand : IRequest<bool>
     {
         public Guid TaskId { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

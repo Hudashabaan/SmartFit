@@ -190,11 +190,11 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
 
             // 🔥 Lifestyle
             var tasks = await _context.Tasks
-                .Where(t => t.UserId == userIdGuid)
-                .ToListAsync(cancellationToken);
+          .Where(t => t.UserId == request.UserId.ToString())
+          .ToListAsync(cancellationToken);
 
             var logs = await _context.TaskLogs
-                .Where(l => l.UserId == userIdGuid && l.Date >= start && l.Date < end)
+                .Where(l => l.UserId == userIdString && l.Date >= start && l.Date < end)
                 .ToListAsync(cancellationToken);
 
             var todayTasks = tasks.Select(t => new TaskDto

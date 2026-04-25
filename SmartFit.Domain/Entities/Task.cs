@@ -7,21 +7,23 @@ using System.Threading.Tasks;
 
 namespace SmartFit.Domain.Entities
 {
-     public class Task
-        {
-            public Guid Id { get; set; }
+    public class Task
+    {
+        public Guid Id { get; set; }
 
-            public string Title { get; set; } // مثال: Drink Water
+        public string Title { get; set; }
 
-            public string Description { get; set; } // تفاصيل المهمة
+        public string Description { get; set; }
 
-            public bool IsRecurring { get; set; } // يومية ولا لأ
+        public bool IsRecurring { get; set; }
 
-            public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
-            public Guid UserId { get; set; } // مين صاحب المهمة
+        public string UserId { get; set; }
 
-             public TaskType Type { get; set; }
+        public TaskType Type { get; set; }
+
+        public bool IsCompleted { get; set; } = false; // 🔥 مهم جدًا
     }
-    
+
 }

@@ -10,6 +10,6 @@ namespace SmartFit.Application.Features.Lifestyle.Commands.DeleteTask
     public class DeleteTaskCommand : IRequest<bool>
     {
         public Guid TaskId { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

@@ -26,6 +26,7 @@ namespace SmartFit.Application.Common.Interfaces
         DbSet<TaskLog> TaskLogs { get; set; }
          DbSet<TrainerClientRelation> TrainerClientRelations { get; set; }
          DbSet<TrainerInvite> TrainerInvites { get; set; }
+        DbSet<Feedback> Feedbacks { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

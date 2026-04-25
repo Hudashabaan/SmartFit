@@ -10,6 +10,6 @@ namespace SmartFit.Application.Features.Lifestyle.Queries.GetTodayTasks
 {
     public class GetTodayTasksQuery : IRequest<List<TaskDto>>
     {
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

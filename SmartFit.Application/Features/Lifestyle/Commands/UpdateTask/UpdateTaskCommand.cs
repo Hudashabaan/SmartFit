@@ -11,7 +11,7 @@ namespace SmartFit.Application.Features.Lifestyle.Commands.UpdateTask
     public class UpdateTaskCommand : IRequest<bool>
     {
         public Guid TaskId { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         public string Title { get; set; }
         public string Description { get; set; }

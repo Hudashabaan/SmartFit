@@ -38,7 +38,7 @@ namespace SmartFit.API.Controllers
         [HttpDelete("{taskId}")]
         public async Task<IActionResult> Delete(Guid taskId)
         {
-            var userId = Guid.Parse(User.FindFirst("uid").Value);
+            var userId = User.FindFirst("uid")?.Value;
 
             var result = await _mediator.Send(new DeleteTaskCommand
             {
@@ -52,7 +52,7 @@ namespace SmartFit.API.Controllers
         [HttpGet("today")]
         public async Task<IActionResult> GetToday()
         {
-            var userId = Guid.Parse(User.FindFirst("uid").Value);
+            var userId = User.FindFirst("uid")?.Value;
 
             var result = await _mediator.Send(new GetTodayTasksQuery
             {
@@ -65,7 +65,7 @@ namespace SmartFit.API.Controllers
         [HttpGet("progress")]
         public async Task<IActionResult> GetProgress()
         {
-            var userId = Guid.Parse(User.FindFirst("uid").Value);
+            var userId = User.FindFirst("uid")?.Value;
 
             var result = await _mediator.Send(new GetProgressQuery
             {
@@ -80,7 +80,7 @@ namespace SmartFit.API.Controllers
         {
             command.TaskId = taskId;
 
-            var userId = Guid.Parse(User.FindFirst("uid").Value);
+            var userId = User.FindFirst("uid")?.Value;
             command.UserId = userId;
 
             var result = await _mediator.Send(command);

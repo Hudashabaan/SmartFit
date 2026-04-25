@@ -11,7 +11,7 @@ namespace SmartFit.Domain.Entities
 
         public Guid TaskId { get; set; }
 
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         public DateTime Date { get; set; }
 

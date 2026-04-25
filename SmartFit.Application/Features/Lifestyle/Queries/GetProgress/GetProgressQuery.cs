@@ -10,7 +10,7 @@ namespace SmartFit.Application.Features.Lifestyle.Queries.GetProgress
 {
     public class GetProgressQuery : IRequest<ProgressDto>
     {
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     
     }
 }

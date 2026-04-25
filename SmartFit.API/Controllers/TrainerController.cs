@@ -2,10 +2,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartFit.Application.Features.Trainer.Commands.AcceptInvite;
+using SmartFit.Application.Features.Trainer.Commands.AddFeedback;
 using SmartFit.Application.Features.Trainer.Commands.CreateInvite;
+using SmartFit.Application.Features.Trainer.Commands.RemoveClient;
 using SmartFit.Application.Features.Trainer.DTOs;
 using SmartFit.Application.Features.Trainer.Queries.GetClientDetails;
+using SmartFit.Application.Features.Trainer.Queries.GetClientFeedbacks;
 using SmartFit.Application.Features.Trainer.Queries.GetTrainerClients;
+using SmartFit.Application.Features.Trainer.Queries.GetWeeklyProgress;
+using SmartFit.Application.Features.Trainer.Queries.GetWeightHistory;
 
 namespace SmartFit.API.Controllers
 {
@@ -67,6 +72,55 @@ namespace SmartFit.API.Controllers
         {
             var result = await _mediator.Send(
                 new GetClientDetailsQuery { ClientId = clientId });
+
+            return Ok(result);
+        }
+
+        [HttpPost("feedback")]
+        public async Task<IActionResult> AddFeedback(AddFeedbackCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        [HttpGet("feedbacks")]
+        public async Task<IActionResult> GetMyFeedbacks()
+        {
+            var userId = User.FindFirst("uid")?.Value;
+
+            var result = await _mediator.Send(new GetClientFeedbacksQuery
+            {
+                ClientId = userId
+            });
+
+            return Ok(result);
+        }
+
+        [HttpDelete("remove-client")]
+        public async Task<IActionResult> RemoveClient([FromBody] RemoveClientCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        [HttpGet("weekly-progress/{clientId}")]
+        public async Task<IActionResult> GetWeeklyProgress(string clientId)
+        {
+            var result = await _mediator.Send(new GetWeeklyProgressQuery
+            {
+                ClientId = clientId
+            });
+
+            return Ok(result);
+        }
+
+        [HttpGet("weight-history/{clientId}")]
+        public async Task<IActionResult> GetWeightHistory(string clientId)
+        {
+            var result = await _mediator.Send(new GetWeightHistoryQuery
+            {
+                ClientId = clientId
+            });
 
             return Ok(result);
         }

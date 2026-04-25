@@ -62,7 +62,7 @@ namespace SmartFit.Application.Features.Trainer.Queries.GetClientDetails
                 .ToListAsync(cancellationToken);
 
             // 🔥 6. Lifestyle Tasks
-            var tasks = await _context.LifestyleTasks
+            var tasks = await _context.Tasks
                 .Where(x => x.UserId == request.ClientId)
                 .ToListAsync(cancellationToken);
 

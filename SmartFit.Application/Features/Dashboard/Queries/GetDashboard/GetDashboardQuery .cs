@@ -10,7 +10,7 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
 {
     public class GetDashboardQuery : IRequest<DashboardDto>
     {
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         public DateTime Date { get; set; } = DateTime.UtcNow;
     }
