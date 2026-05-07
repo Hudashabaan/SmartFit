@@ -18,4 +18,8 @@
     <ProjectReference Include="..\SmartFit.Domain\SmartFit.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Admin\Logs\Commands\" />
+  </ItemGroup>
+
 </Project>

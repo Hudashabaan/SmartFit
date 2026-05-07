@@ -5,6 +5,7 @@ using SmartFit.Application.Features.Dashboard.DTOs;
 using SmartFit.Application.Features.Meals.DTOs;
 using SmartFit.Application.Features.HealthScheduler.DTOs;
 using SmartFit.Application.Features.Lifestyle.DTOs;
+using SmartFit.Application.Features.Trainer.DTOs;
 using SmartFit.Application.DTOs;
 using SmartFit.Domain.Enums;
 
@@ -30,9 +31,6 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
         {
             var userIdString = _currentUser.UserId
                 ?? throw new UnauthorizedAccessException("User not logged in");
-
-            if (!Guid.TryParse(userIdString, out var userIdGuid))
-                throw new Exception("Invalid UserId");
 
             var start = request.Date.Date;
             var end = start.AddDays(1);
@@ -171,6 +169,18 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
                 };
             }
 
+            // 🔥 Weight History (🔥 NEW)
+            var weightHistory = await _context.BodyAnalyses
+                .AsNoTracking()
+                .Where(x => x.UserId == userIdString)
+                .OrderBy(x => x.CreatedAt)
+                .Select(x => new WeightHistoryDto
+                {
+                    Date = x.CreatedAt,
+                    Weight = x.Weight
+                })
+                .ToListAsync(cancellationToken);
+
             // 🔥 Notifications
             var notificationsQuery = _context.NotificationHistories
                 .Where(x => x.UserId == userIdString);
@@ -190,8 +200,8 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
 
             // 🔥 Lifestyle
             var tasks = await _context.Tasks
-          .Where(t => t.UserId == request.UserId.ToString())
-          .ToListAsync(cancellationToken);
+                .Where(t => t.UserId == userIdString) // ✅ FIX
+                .ToListAsync(cancellationToken);
 
             var logs = await _context.TaskLogs
                 .Where(l => l.UserId == userIdString && l.Date >= start && l.Date < end)
@@ -239,7 +249,9 @@ namespace SmartFit.Application.Features.Dashboard.Queries.GetDashboard
                 LatestNotifications = latestNotifications,
 
                 TodayTasks = todayTasks,
-                TaskProgress = taskProgressDto
+                TaskProgress = taskProgressDto,
+
+                WeightHistory = weightHistory // 🔥 NEW
             };
         }
     }

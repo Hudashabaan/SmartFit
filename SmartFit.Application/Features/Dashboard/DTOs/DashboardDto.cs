@@ -2,6 +2,7 @@
 using SmartFit.Application.Features.Meals.DTOs;
 using SmartFit.Application.Features.HealthScheduler.DTOs;
 using SmartFit.Application.Features.Lifestyle.DTOs;
+using SmartFit.Application.Features.Trainer.DTOs;
 
 namespace SmartFit.Application.Features.Dashboard.DTOs
 {
@@ -27,9 +28,11 @@ namespace SmartFit.Application.Features.Dashboard.DTOs
         public int NotificationsCount { get; set; }
         public List<NotificationHistoryDto> LatestNotifications { get; set; } = new();
 
-        // 🔥🔥🔥 NEW (Lifestyle)
+        // 🔥 Lifestyle
         public List<TaskDto> TodayTasks { get; set; } = new();
-
         public ProgressDto TaskProgress { get; set; } = new();
+
+        // 🔥🔥🔥 NEW (Weight Chart)
+        public List<WeightHistoryDto> WeightHistory { get; set; } = new();
     }
 }

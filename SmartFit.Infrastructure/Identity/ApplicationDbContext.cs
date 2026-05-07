@@ -33,6 +33,9 @@ namespace SmartFit.Infrastructure.Identity
         public DbSet<TrainerInvite> TrainerInvites { get; set; }
 
         public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<AdminLog> AdminLogs { get; set; }
+
         DbSet<Domain.Entities.Task> IApplicationDbContext.Tasks { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)

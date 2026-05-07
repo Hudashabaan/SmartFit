@@ -15,6 +15,7 @@ using SmartFit.Domain.Entities;
 using SmartFit.Infrastructure.Services;
 using SmartFit.Infrastructure.AI;
 using SmartFit.Application.Common.Services;
+using SmartFit.Application.Features.Chatbot.Interfaces;
 
 namespace SmartFit.Infrastructure
 {
@@ -48,6 +49,9 @@ namespace SmartFit.Infrastructure
             services.AddScoped<IBackgroundJobService, BackgroundJobService>();
             services.AddScoped<INotificationService, FirebaseNotificationService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IIntentClassifier, IntentClassifierService>();
+            services.AddScoped<IChatbotService, ChatbotService>();
+            services.AddScoped<IAdminLogService, AdminLogService>();
             return services;
         }
     }

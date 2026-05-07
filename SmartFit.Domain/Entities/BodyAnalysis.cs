@@ -31,5 +31,7 @@ namespace SmartFit.Domain.Entities
 		public string? ImageUrl { get; set; }
 
 		public DateTime CreatedAt { get; set; }
-	}
+
+        public ImageStatus Status { get; set; } = ImageStatus.Pending;
+    }
 }
