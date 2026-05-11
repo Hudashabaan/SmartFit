@@ -1,20 +1,35 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SmartFit.Domain.Entities;
 using SmartFit.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
+using SmartFit.Domain.Enums;
 
-public class ApplicationUser : IdentityUser
+namespace SmartFit.Domain.Entities
 {
-    public string FullName { get; set; }
+    public class ApplicationUser : IdentityUser
+    {
+        public string FullName { get; set; } = string.Empty;
 
-    public bool IsActive { get; set; } = true;
+        public int Age { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public double Height { get; set; }
 
-    public string? FcmToken { get; set; }
+        public double Weight { get; set; }
 
-    public UserRole Role { get; set; } = UserRole.User;
+        public Gender Gender { get; set; }
 
-    public UserProfile Profile { get; set; }
+        public bool HasHypertension { get; set; }
 
-    public ICollection<Meal> Meals { get; set; }
+        public bool HasDiabetes { get; set; }
+
+        public FitnessGoal FitnessGoal { get; set; }
+
+        public FitnessType FitnessType { get; set; }
+
+        public string? ProfilePictureUrl { get; set; }
+
+        public UserProfile? Profile { get; set; }
+
+        public string? FcmToken { get; set; }
+    }
 }

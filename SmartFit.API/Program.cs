@@ -5,206 +5,280 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using SmartFit.API.Middleware;
+using Microsoft.OpenApi.Models;
+using SmartFit.API.Extensions;
 using SmartFit.Application;
 using SmartFit.Application.Common.Behaviors;
 using SmartFit.Application.Common.Interfaces;
-using SmartFit.Application.Common.Services;
 using SmartFit.Application.Features.Authentication.Commands.register;
 using SmartFit.Domain.Entities;
 using SmartFit.Infrastructure;
 using SmartFit.Infrastructure.Identity;
+using SmartFit.Infrastructure.Persistence;
 using SmartFit.Infrastructure.Services;
+
 using System.Text;
 using System.Text.Json.Serialization;
-using Hangfire;
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
-using System.Threading.Tasks;
 
 namespace SmartFit.API
 {
     public class Program
     {
-        public static async System.Threading.Tasks.Task Main(string[] args)
+        public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // -----------------------------
-            // Add services to the container
-            // -----------------------------
-
+            // =========================================
             // Application Layer
+            // =========================================
+
             builder.Services.AddApplication();
 
-            builder.Services.AddScoped<IJwtService, JwtService>();
-
+            // =========================================
             // Infrastructure Layer
-            builder.Services.AddInfrastructure(builder.Configuration);
+            // =========================================
+
+            builder.Services.AddInfrastructure(
+                builder.Configuration);
+
+            // =========================================
+            // Database
+            // =========================================
+
+            builder.Services.AddDbContext<ApplicationDbContext>(
+                options =>
+                {
+                    options.UseSqlServer(
+                        builder.Configuration
+                            .GetConnectionString(
+                                "DefaultConnection"),
+                        b => b.MigrationsAssembly(
+                            "SmartFit.Infrastructure"));
+                });
+
+            // =========================================
+            // Http Context Accessor
+            // =========================================
 
             builder.Services.AddHttpContextAccessor();
 
-            // Database
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            // Hangfire
-            builder.Services.AddHangfire(config =>
-                config.UseSqlServerStorage(
-                    builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            builder.Services.AddHangfireServer();
-
-            // Identity Service
-            builder.Services.AddScoped<IIdentityService, IdentityService>();
-
+            // =========================================
             // FluentValidation
-            builder.Services.AddFluentValidationAutoValidation();
+            // =========================================
 
-            builder.Services.AddValidatorsFromAssembly(
-                typeof(RegisterCommandValidator).Assembly);
+            builder.Services
+                .AddFluentValidationAutoValidation();
 
-            // MediatR Validation Pipeline
+            builder.Services
+                .AddValidatorsFromAssembly(
+                    typeof(RegisterCommandValidator)
+                        .Assembly);
+
+            // =========================================
+            // MediatR Pipeline Behaviors
+            // =========================================
+
             builder.Services.AddTransient(
                 typeof(IPipelineBehavior<,>),
                 typeof(ValidationBehavior<,>)
             );
 
+            // =========================================
+            // AI Services
+            // =========================================
+
+            builder.Services.AddHttpClient<
+                IBMIPredictionService,
+                BMIPredictionService>(client =>
+                {
+                    client.BaseAddress = new Uri(
+                        builder.Configuration
+                        ["AIModels:BMIPredictionUrl"]!);
+                });
+
+            builder.Services.AddHttpClient<
+                ICaloriesPredictionService,
+                CaloriesPredictionService>(client =>
+                {
+                    client.BaseAddress = new Uri(
+                        builder.Configuration
+                        ["AIModels:CaloriesPredictionUrl"]!);
+                });
+
+            builder.Services.AddHttpClient<
+                IExerciseRecommendationAiService,
+                ExerciseRecommendationAiService>(client =>
+                {
+                    client.BaseAddress = new Uri(
+                        builder.Configuration
+                        ["AIModels:ExerciseRecommendationUrl"]!);
+                });
+
+            // =========================================
             // JWT Authentication
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme =
-                    JwtBearerDefaults.AuthenticationScheme;
+            // =========================================
 
-                options.DefaultChallengeScheme =
-                    JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters =
-                    new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
+            builder.Services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme =
+                        JwtBearerDefaults.AuthenticationScheme;
 
-                        ValidIssuer =
-                            builder.Configuration["JWT:Issuer"],
+                    options.DefaultChallengeScheme =
+                        JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters =
+                        new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
 
-                        ValidAudience =
-                            builder.Configuration["JWT:Audience"],
+                            ValidateAudience = true,
 
-                        IssuerSigningKey =
-                            new SymmetricSecurityKey(
-                                Encoding.UTF8.GetBytes(
-                                    builder.Configuration["JWT:Secret"]))
-                    };
-            });
+                            ValidateLifetime = true,
 
+                            ValidateIssuerSigningKey = true,
+
+                            ValidIssuer =
+                                builder.Configuration["JWT:Issuer"],
+
+                            ValidAudience =
+                                builder.Configuration["JWT:Audience"],
+
+                            IssuerSigningKey =
+                                new SymmetricSecurityKey(
+                                    Encoding.UTF8.GetBytes(
+                                        builder.Configuration["JWT:Secret"]!
+                                    ))
+                        };
+                });
+
+            // =========================================
             // Identity Options
-            builder.Services.Configure<IdentityOptions>(options =>
-            {
-                options.Lockout.MaxFailedAccessAttempts = 5;
+            // =========================================
 
-                options.Lockout.DefaultLockoutTimeSpan =
-                    TimeSpan.FromMinutes(5);
+            builder.Services.Configure<IdentityOptions>(
+                options =>
+                {
+                    options.Password.RequireDigit = true;
 
-                options.Lockout.AllowedForNewUsers = true;
-            });
+                    options.Password.RequireUppercase = false;
 
+                    options.Password.RequireLowercase = false;
+
+                    options.Password.RequireNonAlphanumeric = false;
+
+                    options.Password.RequiredLength = 6;
+
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+
+                    options.Lockout.DefaultLockoutTimeSpan =
+                        TimeSpan.FromMinutes(5);
+
+                    options.Lockout.AllowedForNewUsers = true;
+                });
+
+            // =========================================
             // Controllers
-            builder.Services.AddControllers()
+            // =========================================
+
+            builder.Services
+                .AddControllers()
                 .AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.Converters
+                    options.JsonSerializerOptions
+                        .Converters
                         .Add(new JsonStringEnumConverter());
                 });
 
-            // Firebase
-            try
-            {
-                var path = Path.Combine(
-                    Directory.GetCurrentDirectory(),
-                    "Configurations",
-                    "firebase-adminsdk.json");
-
-                FirebaseApp.Create(new AppOptions()
-                {
-                    Credential = GoogleCredential.FromFile(path)
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Firebase Error: " + ex.Message);
-            }
-
+            // =========================================
             // Swagger
+            // =========================================
+
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddSwaggerGen(options =>
             {
+                options.SwaggerDoc(
+                    "v1",
+                    new OpenApiInfo
+                    {
+                        Title = "SmartFit API",
+                        Version = "v1"
+                    });
+
                 options.AddSecurityDefinition(
                     "Bearer",
-                    new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                    new OpenApiSecurityScheme
                     {
                         Name = "Authorization",
-                        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+
+                        Type = SecuritySchemeType.Http,
+
                         Scheme = "bearer",
+
                         BearerFormat = "JWT",
-                        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+
+                        In = ParameterLocation.Header,
+
                         Description =
-                            "Enter 'Bearer' [space] and then your valid token"
+                            "Enter Bearer Token"
                     });
 
                 options.AddSecurityRequirement(
-                    new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                    new OpenApiSecurityRequirement
                     {
                         {
-                            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                            new OpenApiSecurityScheme
                             {
                                 Reference =
-                                    new Microsoft.OpenApi.Models.OpenApiReference
+                                    new OpenApiReference
                                     {
                                         Type =
-                                            Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                            ReferenceType
+                                                .SecurityScheme,
+
                                         Id = "Bearer"
                                     }
                             },
-                            new string[] { }
+
+                            Array.Empty<string>()
                         }
                     });
             });
 
             var app = builder.Build();
 
-            // -----------------------------
-            // Seed Roles & Admin Users
-            // -----------------------------
+            // =========================================
+            // Seed Roles & Admin
+            // =========================================
+
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
 
                 var roleManager =
-                    services.GetRequiredService<RoleManager<IdentityRole>>();
+                    services.GetRequiredService<
+                        RoleManager<IdentityRole>>();
 
                 var userManager =
-                    services.GetRequiredService<UserManager<ApplicationUser>>();
+                    services.GetRequiredService<
+                        UserManager<ApplicationUser>>();
 
-                // 🔥 Seed Roles
-                await RoleSeeder.SeedRolesAsync(roleManager);
-
-                // 🔥 Seed Admin + Support
-                await DataSeeder.SeedAdminAsync(userManager);
+                RoleSeeder.SeedRolesAsync(roleManager)
+                    .Wait();
             }
 
-            // Exception Middleware
-            app.UseMiddleware<ExceptionMiddleware>();
+            // =========================================
+            // Global Exception Middleware
+            // =========================================
 
-            // -----------------------------
-            // HTTP Request Pipeline
-            // -----------------------------
+            app.UseCustomExceptionHandler();
+
+            // =========================================
+            // Swagger
+            // =========================================
 
             if (app.Environment.IsDevelopment())
             {
@@ -213,29 +287,24 @@ namespace SmartFit.API
                 app.UseSwaggerUI();
             }
 
+            // =========================================
+            // HTTPS
+            // =========================================
+
             app.UseHttpsRedirection();
 
-            // Hangfire Dashboard
-            if (!app.Environment.IsEnvironment("Migration"))
-            {
-                app.UseHangfireDashboard();
+            // =========================================
+            // Authentication & Authorization
+            // =========================================
 
-                var recurringJobManager =
-                    app.Services.GetRequiredService<IRecurringJobManager>();
-
-                recurringJobManager.AddOrUpdate<IBackgroundJobService>(
-                    "process-schedules",
-                    x => x.ProcessSchedulesAsync(),
-                    Cron.Minutely);
-            }
-
-            // Authentication
             app.UseAuthentication();
 
-            // Authorization
             app.UseAuthorization();
 
+            // =========================================
             // Controllers
+            // =========================================
+
             app.MapControllers();
 
             app.Run();

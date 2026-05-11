@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SmartFit.Application.Common.Interfaces;
-using SmartFit.Application.DTOs;
+using SmartFit.Application.Features.Profile.DTOs;
 
 namespace SmartFit.Application.Features.Profile.Queries.GetProfile
 {
@@ -20,26 +20,45 @@ namespace SmartFit.Application.Features.Profile.Queries.GetProfile
         }
 
         public async Task<ProfileDto> Handle(
-           GetProfileQuery request,
-           CancellationToken cancellationToken)
+            GetProfileQuery request,
+            CancellationToken cancellationToken)
         {
             var userId = _currentUser.UserId;
 
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("User not authenticated");
+
             var profile = await _context.UserProfiles
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+                .FirstOrDefaultAsync(
+                    x => x.UserId == userId,
+                    cancellationToken);
 
             if (profile == null)
                 throw new Exception("Profile not found");
 
             return new ProfileDto
             {
+                Id = profile.Id,
+                UserId = profile.UserId,
+
+                FullName = profile.FullName,
+
                 Age = profile.Age,
                 Height = profile.Height,
                 Weight = profile.Weight,
 
-                Gender = profile.Gender.ToString(),
-                ActivityLevel = profile.ActivityLevel.ToString()
+                Gender = profile.Gender,
+
+                HasHypertension = profile.HasHypertension,
+                HasDiabetes = profile.HasDiabetes,
+
+                FitnessGoal = profile.FitnessGoal,
+                FitnessType = profile.FitnessType,
+
+                ProfilePictureUrl = profile.ProfilePictureUrl,
+
+                CreatedAt = profile.CreatedAt
             };
         }
     }

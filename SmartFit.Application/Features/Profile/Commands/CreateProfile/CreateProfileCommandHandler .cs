@@ -10,50 +10,60 @@ namespace SmartFit.Application.Features.Profile.Commands.CreateProfile
     {
         private readonly IApplicationDbContext _context;
         private readonly ICurrentUserService _currentUser;
-        private readonly IDefaultTaskService _defaultTaskService;
 
         public CreateProfileCommandHandler(
             IApplicationDbContext context,
-            ICurrentUserService currentUser,
-            IDefaultTaskService defaultTaskService)
+            ICurrentUserService currentUser)
         {
             _context = context;
             _currentUser = currentUser;
-            _defaultTaskService = defaultTaskService;
         }
 
-        public async Task<string> Handle(CreateProfileCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(
+            CreateProfileCommand request,
+            CancellationToken cancellationToken)
         {
-            // 🟢 1. تأكد إن اليوزر موجود
-            var userId = _currentUser.UserId
-                ?? throw new Exception("User not authenticated");
+            var userId = _currentUser.UserId;
 
-            // 🟢 🔥 تحويل userId من string → Guid
-            if (!Guid.TryParse(userId, out var userGuid))
-                throw new Exception("Invalid UserId");
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("User not authenticated");
 
-            // 🟢 2. شوف هل فيه Profile قبل كده
-            var existing = await _context.UserProfiles
-                .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+            var existingProfile = await _context.UserProfiles
+                .FirstOrDefaultAsync(
+                    x => x.UserId == userId,
+                    cancellationToken);
 
-            if (existing != null)
-                return existing.UserId;
+            if (existingProfile != null)
+                throw new Exception("Profile already exists");
 
-            // 🟢 3. اعمل Profile جديد
-            var profile = new UserProfile(
-                userId,
-                "",   // name
-                ""    // email
-            );
+            var profile = new UserProfile
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
 
-            // 🟢 4. Save Profile
+                FullName = request.FullName,
+                Age = request.Age,
+                Height = request.Height,
+                Weight = request.Weight,
+
+                Gender = request.Gender,
+
+                HasHypertension = request.HasHypertension,
+                HasDiabetes = request.HasDiabetes,
+
+                FitnessGoal = request.FitnessGoal,
+                FitnessType = request.FitnessType,
+
+                ProfilePictureUrl = request.ProfilePictureUrl,
+
+                CreatedAt = DateTime.UtcNow
+            };
+
             _context.UserProfiles.Add(profile);
+
             await _context.SaveChangesAsync(cancellationToken);
 
-            // 🟢 5. 🔥 إنشاء Default Tasks
-            await _defaultTaskService.CreateDefaultTasks(userGuid);
-
-            return profile.UserId;
+            return "Profile created successfully";
         }
     }
 }

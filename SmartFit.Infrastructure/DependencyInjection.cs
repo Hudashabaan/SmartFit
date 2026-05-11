@@ -13,9 +13,9 @@ using SmartFit.Infrastructure.Identity;
 using SmartFit.Infrastructure.Persistence;
 using SmartFit.Domain.Entities;
 using SmartFit.Infrastructure.Services;
-using SmartFit.Infrastructure.AI;
+
 using SmartFit.Application.Common.Services;
-using SmartFit.Application.Features.Chatbot.Interfaces;
+
 
 namespace SmartFit.Infrastructure
 {
@@ -42,16 +42,24 @@ namespace SmartFit.Infrastructure
 
             services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
-            services.AddScoped<IAIService, AIService>();
+          
             services.AddScoped<IFileService, FileService>();
-            services.AddScoped<IFoodRecognitionService, FoodRecognitionService>();
+           
             services.AddScoped<IImageService, CloudinaryService>();
-            services.AddScoped<IBackgroundJobService, BackgroundJobService>();
+           
             services.AddScoped<INotificationService, FirebaseNotificationService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IIntentClassifier, IntentClassifierService>();
-            services.AddScoped<IChatbotService, ChatbotService>();
-            services.AddScoped<IAdminLogService, AdminLogService>();
+            services.AddScoped<IJwtService, JwtService>();
+
+            services.AddHttpClient<
+      IBMIPredictionService,
+      BMIPredictionService>();
+
+            services.AddHttpClient<
+                ICaloriesPredictionService,
+                CaloriesPredictionService>();
+
+
             return services;
         }
     }

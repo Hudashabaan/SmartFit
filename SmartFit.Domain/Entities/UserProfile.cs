@@ -4,77 +4,32 @@ namespace SmartFit.Domain.Entities
 {
     public class UserProfile
     {
-        public string UserId { get; private set; } = string.Empty;
+        public Guid Id { get; set; }
 
-        public string FirstName { get; private set; } = string.Empty;
-        public string LastName { get; private set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
 
-        public int Age { get; private set; }
-        public double Height { get; private set; }
-        public double Weight { get; private set; }
-        public Gender Gender { get; private set; }
+        public ApplicationUser User { get; set; } = null!;
 
-        public ActivityLevel ActivityLevel { get; private set; }
+        public string FullName { get; set; } = string.Empty;
 
-        public string? BodyImageUrl { get; private set; }
+        public int Age { get; set; }
 
-        public DateTime CreatedAt { get; private set; }
-        public DateTime UpdatedAt { get; private set; }
+        public float Height { get; set; }
 
-        // 🔥 Constructor لـ EF
-        private UserProfile() { }
+        public float Weight { get; set; }
 
-        // 🔥 Constructor الأساسي
-        public UserProfile(string userId, string firstName, string lastName)
-        {
-            UserId = userId;
-            FirstName = firstName;
-            LastName = lastName;
+        public Gender Gender { get; set; }
 
-            CreatedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
-        }
+        public bool HasHypertension { get; set; }
 
-        public void Update(
-            int age,
-            double height,
-            double weight,
-            Gender gender,
-            ActivityLevel? activityLevel)
-        {
-            Age = age;
-            Height = height;
-            Weight = weight;
-            Gender = gender;
+        public bool HasDiabetes { get; set; }
 
-            if (activityLevel.HasValue)
-                ActivityLevel = activityLevel.Value;
+        public FitnessGoal FitnessGoal { get; set; }
 
-            UpdatedAt = DateTime.UtcNow;
-        }
+        public FitnessType FitnessType { get; set; }
 
-        public void UpdateGender(Gender gender)
-        {
-            Gender = gender;
-            UpdatedAt = DateTime.UtcNow;
-        }
+        public string? ProfilePictureUrl { get; set; }
 
-        public void UpdateAge(int age)
-        {
-            Age = age;
-            UpdatedAt = DateTime.UtcNow;
-        }
-
-        public void UpdateHeight(double height)
-        {
-            Height = height;
-            UpdatedAt = DateTime.UtcNow;
-        }
-
-        public void UpdateWeight(double weight)
-        {
-            Weight = weight;
-            UpdatedAt = DateTime.UtcNow;
-        }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

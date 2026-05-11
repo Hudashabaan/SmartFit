@@ -163,12 +163,12 @@ namespace SmartFit.Infrastructure.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -180,12 +180,27 @@ namespace SmartFit.Infrastructure.Migrations
                     b.Property<string>("FcmToken")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("FitnessGoal")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FitnessType")
+                        .HasColumnType("int");
+
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("HasDiabetes")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("HasHypertension")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("Height")
+                        .HasColumnType("float");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -210,6 +225,9 @@ namespace SmartFit.Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -219,6 +237,9 @@ namespace SmartFit.Infrastructure.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -233,276 +254,337 @@ namespace SmartFit.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("SmartFit.Domain.Entities.BodyAnalysis", b =>
+            modelBuilder.Entity("SmartFit.Domain.Entities.BMIRecord", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double?>("BMI")
-                        .HasColumnType("float");
-
-                    b.Property<double>("BodyFatPercentage")
-                        .HasColumnType("float");
-
-                    b.Property<int>("BodyShape")
+                    b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<double>("Confidence")
-                        .HasColumnType("float");
+                    b.Property<string>("BodyType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("FatMass")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Height")
-                        .HasColumnType("float");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("MuscleMass")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Source")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
+                    b.Property<string>("HealthStatus")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<double>("Waist")
+                    b.Property<float>("HeightCm")
+                        .HasColumnType("real");
+
+                    b.Property<double>("PredictedBMI")
                         .HasColumnType("float");
 
-                    b.Property<double>("Weight")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BodyAnalyses");
-                });
-
-            modelBuilder.Entity("SmartFit.Domain.Entities.FoodAnalysis", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("Calories")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Carbs")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Confidence")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Fat")
-                        .HasColumnType("float");
-
-                    b.Property<string>("FoodName")
+                    b.Property<string>("Sex")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<double>("Protein")
-                        .HasColumnType("float");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FoodAnalyses", (string)null);
-                });
-
-            modelBuilder.Entity("SmartFit.Domain.Entities.Goal", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("DurationInDays")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("StartWeight")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TargetWeight")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Goals");
-                });
-
-            modelBuilder.Entity("SmartFit.Domain.Entities.HealthSchedule", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastTriggeredAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Repeat")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("HealthSchedules");
-                });
-
-            modelBuilder.Entity("SmartFit.Domain.Entities.Meal", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double>("Calories")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Carbs")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Fat")
-                        .HasColumnType("float");
-
-                    b.Property<string>("FoodName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<double>("Protein")
-                        .HasColumnType("float");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<float>("WeightKg")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Meals");
+                    b.ToTable("BMIRecords");
                 });
 
-            modelBuilder.Entity("SmartFit.Domain.Entities.SmartFit.Domain.Entities.NotificationHistory", b =>
+            modelBuilder.Entity("SmartFit.Domain.Entities.CaloriesPrediction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("SentAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NotificationHistories");
-                });
-
-            modelBuilder.Entity("SmartFit.Domain.Entities.UserProfile", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("ActivityLevel")
-                        .HasColumnType("int");
-
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<string>("BodyImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("AvgBPM")
+                        .HasColumnType("int");
+
+                    b.Property<double>("BMI")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("float(5)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("Gender")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("MaxBPM")
+                        .HasColumnType("int");
+
+                    b.Property<double>("PredictedBurnedCalories")
+                        .HasPrecision(8, 2)
+                        .HasColumnType("float(8)");
+
+                    b.Property<double>("SessionDurationHours")
+                        .HasPrecision(4, 2)
+                        .HasColumnType("float(4)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<double>("WeightKg")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("float(5)");
+
+                    b.Property<string>("WorkoutAnalysis")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("WorkoutFrequencyDaysWeek")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WorkoutSummary")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("WorkoutType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CaloriesPredictions");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.Exercise", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("DurationInMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Equipment")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("EstimatedCaloriesBurn")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FitnessGoal")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FitnessType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("SupportsDiabetes")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SupportsHypertension")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("FitnessGoal");
+
+                    b.HasIndex("FitnessType");
+
+                    b.HasIndex("Level");
+
+                    b.ToTable("Exercises");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.ExerciseCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("ExerciseCategories");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.UserExerciseRecommendation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RecommendationReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("RecommendedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RecommendedEquipment")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RecommendedExercises")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecommendedAt");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserExerciseRecommendations");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.UserProfile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FitnessGoal")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FitnessType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
-                    b.Property<double>("Height")
-                        .HasColumnType("float");
+                    b.Property<bool>("HasDiabetes")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("LastName")
+                    b.Property<bool>("HasHypertension")
+                        .HasColumnType("bit");
+
+                    b.Property<float>("Height")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<float>("Weight")
+                        .HasColumnType("real");
 
-                    b.Property<double>("Weight")
-                        .HasColumnType("float");
+                    b.HasKey("Id");
 
-                    b.HasKey("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("UserProfiles");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.WorkoutPlan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Goal")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("TotalDuration")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkoutPlans");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.WorkoutPlanExercise", b =>
+                {
+                    b.Property<Guid>("WorkoutPlanId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ExerciseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("WorkoutPlanId", "ExerciseId");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.ToTable("WorkoutPlanExercises");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -556,10 +638,43 @@ namespace SmartFit.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SmartFit.Domain.Entities.Meal", b =>
+            modelBuilder.Entity("SmartFit.Domain.Entities.BMIRecord", b =>
                 {
                     b.HasOne("SmartFit.Domain.Entities.ApplicationUser", "User")
-                        .WithMany("Meals")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.CaloriesPrediction", b =>
+                {
+                    b.HasOne("SmartFit.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.Exercise", b =>
+                {
+                    b.HasOne("SmartFit.Domain.Entities.ExerciseCategory", "Category")
+                        .WithMany("Exercises")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.UserExerciseRecommendation", b =>
+                {
+                    b.HasOne("SmartFit.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -569,16 +684,52 @@ namespace SmartFit.Infrastructure.Migrations
 
             modelBuilder.Entity("SmartFit.Domain.Entities.UserProfile", b =>
                 {
-                    b.HasOne("SmartFit.Domain.Entities.ApplicationUser", null)
-                        .WithOne()
+                    b.HasOne("SmartFit.Domain.Entities.ApplicationUser", "User")
+                        .WithOne("Profile")
                         .HasForeignKey("SmartFit.Domain.Entities.UserProfile", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.WorkoutPlanExercise", b =>
+                {
+                    b.HasOne("SmartFit.Domain.Entities.Exercise", "Exercise")
+                        .WithMany("WorkoutPlanExercises")
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartFit.Domain.Entities.WorkoutPlan", "WorkoutPlan")
+                        .WithMany("WorkoutPlanExercises")
+                        .HasForeignKey("WorkoutPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exercise");
+
+                    b.Navigation("WorkoutPlan");
                 });
 
             modelBuilder.Entity("SmartFit.Domain.Entities.ApplicationUser", b =>
                 {
-                    b.Navigation("Meals");
+                    b.Navigation("Profile");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.Exercise", b =>
+                {
+                    b.Navigation("WorkoutPlanExercises");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.ExerciseCategory", b =>
+                {
+                    b.Navigation("Exercises");
+                });
+
+            modelBuilder.Entity("SmartFit.Domain.Entities.WorkoutPlan", b =>
+                {
+                    b.Navigation("WorkoutPlanExercises");
                 });
 #pragma warning restore 612, 618
         }

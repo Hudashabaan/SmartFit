@@ -9,17 +9,32 @@ using SmartFit.Domain.Entities;
 
 namespace SmartFit.Infrastructure.Persistence.Configurations
 {
-
-    public class UserProfileConfiguration : IEntityTypeConfiguration<UserProfile>
+    public class UserProfileConfiguration
+        : IEntityTypeConfiguration<UserProfile>
     {
         public void Configure(EntityTypeBuilder<UserProfile> builder)
         {
-            builder.HasKey(x => x.UserId);
+            builder.HasKey(x => x.Id);
 
-            builder.HasOne<ApplicationUser>()
-                   .WithOne()
-                   .HasForeignKey<UserProfile>(x => x.UserId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(x => x.FullName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.Property(x => x.Height)
+                .IsRequired();
+
+            builder.Property(x => x.Weight)
+                .IsRequired();
+
+            builder.Property(x => x.Age)
+                .IsRequired();
+
+            builder.HasOne(x => x.User)
+                .WithOne(x => x.Profile)
+                .HasForeignKey<UserProfile>(x => x.UserId);
+
+            builder.Property(x => x.ProfilePictureUrl)
+                .HasMaxLength(500);
         }
     }
 }

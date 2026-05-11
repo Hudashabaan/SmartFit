@@ -1,16 +1,11 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SmartFit.Application.Common.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartFit.Application.Features.Profile.Commands.UpdateProfile
 {
     public class UpdateProfileCommandHandler
-    : IRequestHandler<UpdateProfileCommand, Unit>
+        : IRequestHandler<UpdateProfileCommand, string>
     {
         private readonly IApplicationDbContext _context;
         private readonly ICurrentUserService _currentUser;
@@ -23,28 +18,41 @@ namespace SmartFit.Application.Features.Profile.Commands.UpdateProfile
             _currentUser = currentUser;
         }
 
-        public async Task<Unit> Handle(UpdateProfileCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(
+            UpdateProfileCommand request,
+            CancellationToken cancellationToken)
         {
             var userId = _currentUser.UserId;
 
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("User not authenticated");
+
             var profile = await _context.UserProfiles
-                .FirstOrDefaultAsync(x => x.UserId == userId);
+                .FirstOrDefaultAsync(
+                    x => x.UserId == userId,
+                    cancellationToken);
 
             if (profile == null)
                 throw new Exception("Profile not found");
 
-            // ✅ تحديث البيانات بدون Goal
-            profile.Update(
-                request.Age,
-                request.Height,
-                request.Weight,
-                request.Gender,
-                request.ActivityLevel
-            );
+            profile.FullName = request.FullName;
+            profile.Age = request.Age;
+            profile.Height = request.Height;
+            profile.Weight = request.Weight;
+
+            profile.Gender = request.Gender;
+
+            profile.HasHypertension = request.HasHypertension;
+            profile.HasDiabetes = request.HasDiabetes;
+
+            profile.FitnessGoal = request.FitnessGoal;
+            profile.FitnessType = request.FitnessType;
+
+            profile.ProfilePictureUrl = request.ProfilePictureUrl;
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return Unit.Value;
+            return "Profile updated successfully";
         }
     }
 }

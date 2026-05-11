@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SmartFit.Application.Common.Interfaces;
 using SmartFit.Domain.Entities;
-using SmartFit.Domain.Entities.SmartFit.Domain.Entities;
-using TaskEntity = SmartFit.Domain.Entities.Task;
+
 
 namespace SmartFit.Infrastructure.Identity
 {
@@ -20,23 +19,22 @@ namespace SmartFit.Infrastructure.Identity
 
         public DbSet<ApplicationUser> Users { get; }
         public DbSet<UserProfile> UserProfiles { get; set; }
-        public DbSet<BodyAnalysis> BodyAnalyses { get; set; }
-        public DbSet<Meal> Meals { get; set; }
-        public DbSet<FoodAnalysis> FoodAnalyses { get; set; }
-        public DbSet<Goal> Goals { get; set; }
+        public DbSet<BMIRecord> BMIRecords { get; set; }
+        public DbSet<CaloriesPrediction> CaloriesPredictions { get; set; }
 
-        public DbSet<HealthSchedule> HealthSchedules { get; set; }
-        public DbSet<NotificationHistory> NotificationHistories { get; set; }
-        public DbSet<TaskEntity> Tasks { get; set; }
-        public DbSet<TaskLog> TaskLogs { get; set; }
-        public DbSet<TrainerClientRelation> TrainerClientRelations { get; set; }
-        public DbSet<TrainerInvite> TrainerInvites { get; set; }
+        // =========================
+        // Exercise Recommendation
+        // =========================
 
-        public DbSet<Feedback> Feedbacks { get; set; }
-        public DbSet<ChatMessage> ChatMessages { get; set; }
-        public DbSet<AdminLog> AdminLogs { get; set; }
+        public DbSet<Exercise> Exercises { get; set; }
 
-        DbSet<Domain.Entities.Task> IApplicationDbContext.Tasks { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public DbSet<ExerciseCategory> ExerciseCategories { get; set; }
+
+        public DbSet<WorkoutPlan> WorkoutPlans { get; set; }
+
+        public DbSet<WorkoutPlanExercise> WorkoutPlanExercises { get; set; }
+
+        public DbSet<UserExerciseRecommendation> UserExerciseRecommendations { get; set; }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
             => await base.SaveChangesAsync(cancellationToken);

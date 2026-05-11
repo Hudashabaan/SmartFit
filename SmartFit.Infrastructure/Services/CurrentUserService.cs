@@ -2,22 +2,32 @@
 using Microsoft.AspNetCore.Http;
 using SmartFit.Application.Common.Interfaces;
 using SmartFit.Domain.Enums;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using SmartFit.Application.Common.Interfaces;
 
 namespace SmartFit.Infrastructure.Services
-{ 
-public class CurrentUserService : ICurrentUserService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public CurrentUserService(IHttpContextAccessor httpContextAccessor)
+    public class CurrentUserService
+        : ICurrentUserService
     {
-        _httpContextAccessor = httpContextAccessor;
-    }
+        private readonly IHttpContextAccessor
+            _httpContextAccessor;
 
-    public string UserId =>
-      _httpContextAccessor.HttpContext?.User?
-      .FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        public CurrentUserService(
+            IHttpContextAccessor
+                httpContextAccessor)
+        {
+            _httpContextAccessor =
+                httpContextAccessor;
+        }
 
-        public UserRole Role => throw new NotImplementedException();
+        public string UserId =>
+            _httpContextAccessor
+                .HttpContext?
+                .User?
+                .FindFirstValue(
+                    ClaimTypes.NameIdentifier)
+            ?? string.Empty;
     }
 }

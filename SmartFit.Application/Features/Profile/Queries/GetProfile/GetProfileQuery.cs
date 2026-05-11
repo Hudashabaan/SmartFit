@@ -5,10 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
-using SmartFit.Application.DTOs;
+using MediatR;
+using SmartFit.Application.Features.Profile.DTOs;
+
+using MediatR;
+
 
 namespace SmartFit.Application.Features.Profile.Queries.GetProfile
 {
-
-    public record GetProfileQuery : IRequest<ProfileDto>;
+    public class GetProfileQuery : IRequest<ProfileDto>
+    {
+    }
 }

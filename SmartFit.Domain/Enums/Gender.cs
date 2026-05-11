@@ -11,5 +11,4 @@ namespace SmartFit.Domain.Enums
         Male = 1,
         Female = 2
     }
-
 }

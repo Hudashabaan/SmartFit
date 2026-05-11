@@ -19,7 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Admin\Logs\Commands\" />
+    <Folder Include="Features\BodyAnalysisFeature\Commands\CreateBodyAnalysis\" />
+    <Folder Include="Features\FoodAnalysisFeature\Commands\AnalyzeFood\" />
+    <Folder Include="Features\Profile\Mapping\" />
+    <Folder Include="Features\Profile\Validators\" />
   </ItemGroup>
 
 </Project>
